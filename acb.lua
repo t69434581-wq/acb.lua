@@ -12,7 +12,7 @@ local function verySafePush(otherPlayer)
     if not hrp then return end
     
     local direction = (hrp.Position - player.Character.HumanoidRootPart.Position).Unit
-    hrp.Velocity = hrp.Velocity + (direction * 50)
+    hrp.Velocity = hrp.Velocity + (direction * 200)
 end
 
 local function onTouch(part)
