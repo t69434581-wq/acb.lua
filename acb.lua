@@ -1,38 +1,32 @@
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local BOOST_KEY = Enum.KeyCode.B
+local PUSH_FORCE = 200
 
-local REFLECT_KEY = Enum.KeyCode.B
-local isActive = false
-
-local function verySafePush(otherPlayer)
-    local char = otherPlayer.Character
-    if not char then return end
-    
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    
-    local direction = (hrp.Position - player.Character.HumanoidRootPart.Position).Unit
-    hrp.Velocity = hrp.Velocity + (direction * 200)
+local function getCurrentVehicle()
+    local char = player.Character
+    if not char then return nil end
+    local seat = char:FindFirstChildOfClass("VehicleSeat")
+    if not seat then return nil end
+    return seat.Parent
 end
 
-local function onTouch(part)
-    if not isActive then return end
-    local humanoid = part.Parent:FindFirstChild("Humanoid")
-    if not humanoid then return end
-    local otherPlayer = game.Players:GetPlayerFromCharacter(part.Parent)
-    if not otherPlayer or otherPlayer == player then return end
-    verySafePush(otherPlayer)
+local function pushVehicle()
+    local vehicle = getCurrentVehicle()
+    if not vehicle then return end
+    
+    local primaryPart = vehicle:FindFirstChild("Body") or vehicle:FindFirstChild("Chassis") or vehicle:FindFirstChildWhichIsA("BasePart")
+    if not primaryPart then return end
+    
+    local direction = vehicle.CFrame.LookVector
+    local force = direction * PUSH_FORCE * (vehicle:GetMass() / 100)
+    
+    primaryPart:ApplyImpulse(force)
 end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.KeyCode == REFLECT_KEY then
-        isActive = not isActive
-        if isActive then
-            player.Character.HumanoidRootPart.Touched:Connect(onTouch)
-            print("ON")
-        else
-            print("OFF")
-        end
+    if input.KeyCode == BOOST_KEY then
+        pushVehicle()
     end
 end)
