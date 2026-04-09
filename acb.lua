@@ -10,20 +10,20 @@ local boostEndTime = 0
 
 local function getCurrentVehicle()
     local character = player.Character
-    if not character then return nil, nil end
+    if not character then return nil end
     local seat = character:FindFirstChildOfClass("VehicleSeat")
-    if not seat then return nil, nil end
+    if not seat then return nil end
     local vehicle = seat.Parent
-    if vehicle:FindFirstChild("Engine") or vehicle:FindFirstChild("Wheels") or vehicle:FindFirstChild("Chassis") then
-        return vehicle, seat
+    if vehicle:FindFirstChild("Wheels") or vehicle:FindFirstChild("Body") or vehicle:FindFirstChild("DriveSeat") then
+        return vehicle
     end
-    return nil, nil
+    return nil
 end
 
 local function applyImpulseBoost(vehicle)
     if not vehicle then return end
-    local primaryPart = vehicle.PrimaryPart or vehicle:FindFirstChild("Chassis") or vehicle:FindFirstChild("Body") or vehicle:FindFirstChildWhichIsA("BasePart")
-    if primaryPart then
+    local primaryPart = vehicle:FindFirstChild("Body") or vehicle:FindFirstChild("DriveSeat") or vehicle:FindFirstChildWhichIsA("BasePart")
+    if primaryPart and primaryPart:IsA("BasePart") then
         local direction = vehicle.CFrame.LookVector
         local force = direction * BOOST_FORCE * (vehicle:GetMass() / 100)
         primaryPart:ApplyImpulse(force)
