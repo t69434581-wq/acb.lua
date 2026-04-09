@@ -3,7 +3,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local BOOST_FORCE = 300
 local BOOST_DURATION = 3
-local BOOST_KEY = Enum.KeyCode.P
+local BOOST_KEY = Enum.KeyCode.B
 
 local isBoosting = false
 local boostEndTime = 0
@@ -11,10 +11,8 @@ local boostEndTime = 0
 local function getCurrentVehicle()
     local character = player.Character
     if not character then return nil, nil end
-    
     local seat = character:FindFirstChildOfClass("VehicleSeat")
     if not seat then return nil, nil end
-    
     local vehicle = seat.Parent
     if vehicle:FindFirstChild("Engine") or vehicle:FindFirstChild("Wheels") or vehicle:FindFirstChild("Chassis") then
         return vehicle, seat
@@ -24,7 +22,6 @@ end
 
 local function applyImpulseBoost(vehicle)
     if not vehicle then return end
-    
     local primaryPart = vehicle.PrimaryPart or vehicle:FindFirstChild("Chassis") or vehicle:FindFirstChild("Body") or vehicle:FindFirstChildWhichIsA("BasePart")
     if primaryPart then
         local direction = vehicle.CFrame.LookVector
@@ -39,20 +36,15 @@ local function boost()
         warn("Вы не в A-Chassis машине!")
         return false
     end
-    
     if isBoosting then
         return false
     end
-    
     isBoosting = true
-    
     for i = 1, 5 do
         applyImpulseBoost(vehicle)
         task.wait(0.05)
     end
-    
     boostEndTime = tick() + BOOST_DURATION
-    
     task.spawn(function()
         while isBoosting and tick() < boostEndTime and vehicle and vehicle.Parent do
             applyImpulseBoost(vehicle)
@@ -60,7 +52,6 @@ local function boost()
         end
         isBoosting = false
     end)
-    
     return true
 end
 
@@ -71,4 +62,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("ACB загружен")
+print("ACB")
